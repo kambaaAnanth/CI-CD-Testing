@@ -34,9 +34,4 @@ jobs:
       - name: Run Tests
         run: mvn test -Dsurefire.suiteXmlFiles=testng.xml
 
-      - name: Upload TestNG Report
-        if: always()
-        uses: actions/upload-artifact@v2
-        with:
-          name: testng-report
-          path: test-output/
+     
