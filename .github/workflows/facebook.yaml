@@ -1,4 +1,4 @@
-name: Run Facebook Login Tests
+name: Run Selenium Tests
 
 on:
   push:
@@ -32,11 +32,23 @@ jobs:
         run: mvn clean install
 
       - name: Run Tests
-        run: mvn test -Dsurefire.suiteXmlFiles=testng.xml
+        run: |
+          mvn test -Dsurefire.suiteXmlFiles=testng.xml
+          echo "Listing test-output folder:"
+          ls -la test-output || echo "test-output folder not found"
 
-      - name: Upload TestNG Report
+      - name: Compress TestNG Report
+        if: always()
+        run: |
+          if [ -d "test-output" ]; then
+            tar -czf testng-report.tar.gz test-output
+          else
+            echo "test-output folder not found. Skipping compression."
+          fi
+
+      - name: Upload TestNG Report Artifact
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: testng-report
-          path: test-output/
+          path: testng-report.tar.gz
