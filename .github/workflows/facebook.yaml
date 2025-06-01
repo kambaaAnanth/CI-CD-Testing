@@ -1,39 +1,39 @@
-- item1: name: Run Selenium Tests
-- item2: 
-- item3: on:
-- item4: push:
-- item5: branches: [ main ]
-- item6: pull_request:
-- item7: branches: [ main ]
-- item8: 
-- item9: jobs:
-- item10: test:
-- item11: runs-on: ubuntu-latest
-- item12: 
-- item13: steps:
-- item14: - name: Checkout code
-- item15: uses: actions/checkout@v3
-- item16: 
-- item17: - name: Set up JDK 17
-- item18: uses: actions/setup-java@v3
-- item19: with:
-- item20: java-version: '17'
-- item21: distribution: 'temurin'
-- item22: 
-- item23: - name: Cache Maven packages
-- item24: uses: actions/cache@v3
-- item25: with:
-- item26: path: ~/.m2
-- item27: key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-- item28: restore-keys: |
-- item29: ${{ runner.os }}-maven
-- item30: 
-- item31: - name: Upload TestNG Report
-- item32: if: always()
-- item33: uses: actions/upload-artifact@v3
-- item34: with:
-- item35: name: testng-report
-- item36: path: test-output/emailable-report.html
-- item37: 
-- item38: - name: Install dependencies and run tests
-- item39: run: mvn clean test
+name: Selenium Java CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven
+
+    - name: Build and Run Tests
+      run: mvn clean test
+
+    - name: Upload TestNG Report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: testng-report
+        path: test-output/
